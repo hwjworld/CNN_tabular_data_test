@@ -1,0 +1,128 @@
+Model: "model"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_1 (InputLayer)        [(None, 8, 1)]            0         
+                                                                 
+ conv1d (Conv1D)             (None, 8, 16)             96        
+                                                                 
+ conv1d_1 (Conv1D)           (None, 8, 16)             1296      
+                                                                 
+ max_pooling1d (MaxPooling1D  (None, 4, 16)            0         
+ )                                                               
+                                                                 
+ dropout (Dropout)           (None, 4, 16)             0         
+                                                                 
+ conv1d_2 (Conv1D)           (None, 4, 32)             1568      
+                                                                 
+ conv1d_3 (Conv1D)           (None, 4, 32)             3104      
+                                                                 
+ max_pooling1d_1 (MaxPooling  (None, 2, 32)            0         
+ 1D)                                                             
+                                                                 
+ dropout_1 (Dropout)         (None, 2, 32)             0         
+                                                                 
+ conv1d_4 (Conv1D)           (None, 2, 32)             3104      
+                                                                 
+ conv1d_5 (Conv1D)           (None, 2, 32)             3104      
+                                                                 
+ max_pooling1d_2 (MaxPooling  (None, 1, 32)            0         
+ 1D)                                                             
+                                                                 
+ dropout_2 (Dropout)         (None, 1, 32)             0         
+                                                                 
+ conv1d_6 (Conv1D)           (None, 1, 256)            24832     
+                                                                 
+ conv1d_7 (Conv1D)           (None, 1, 256)            196864    
+                                                                 
+ global_max_pooling1d (Globa  (None, 256)              0         
+ lMaxPooling1D)                                                  
+                                                                 
+ dropout_3 (Dropout)         (None, 256)               0         
+                                                                 
+ dense_1 (Dense)             (None, 8)                 2056      
+                                                                 
+ dense_2 (Dense)             (None, 8)                 72        
+                                                                 
+ dense_3_mitbih (Dense)      (None, 2)                 18        
+                                                                 
+=================================================================
+Total params: 236,114
+Trainable params: 236,114
+Non-trainable params: 0
+_________________________________________________________________
+2022-09-08 18:58:50.964834: W tensorflow/core/platform/profile_utils/cpu_utils.cc:128] Failed to get CPU frequency: 0 Hz
+Epoch 1/100
+ 1/15 [=>............................] - ETA: 6s - loss: 0.6952 - acc: 0.4062
+Epoch 1: val_acc improved from -inf to 0.94000, saving model to baseline_cnn_bcw.h5
+15/15 [==============================] - 1s 12ms/step - loss: 0.6748 - acc: 0.7311 - val_loss: 0.5987 - val_acc: 0.9400 - lr: 0.0010
+Epoch 2/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.6255 - acc: 0.8438
+Epoch 2: val_acc did not improve from 0.94000
+15/15 [==============================] - 0s 3ms/step - loss: 0.5306 - acc: 0.9022 - val_loss: 0.3542 - val_acc: 0.9200 - lr: 0.0010
+Epoch 3/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.4879 - acc: 0.8438
+Epoch 3: val_acc did not improve from 0.94000
+15/15 [==============================] - 0s 3ms/step - loss: 0.4046 - acc: 0.8711 - val_loss: 0.2538 - val_acc: 0.9400 - lr: 0.0010
+Epoch 4/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.3123 - acc: 0.9062
+Epoch 4: val_acc did not improve from 0.94000
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 0.00010000000474974513.
+15/15 [==============================] - 0s 3ms/step - loss: 0.2946 - acc: 0.9289 - val_loss: 0.1634 - val_acc: 0.9400 - lr: 0.0010
+Epoch 5/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.2455 - acc: 0.9062
+Epoch 5: val_acc improved from 0.94000 to 0.98000, saving model to baseline_cnn_bcw.h5
+15/15 [==============================] - 0s 3ms/step - loss: 0.2378 - acc: 0.9356 - val_loss: 0.1485 - val_acc: 0.9800 - lr: 1.0000e-04
+Epoch 6/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.1684 - acc: 0.9688
+Epoch 6: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 2ms/step - loss: 0.2253 - acc: 0.9400 - val_loss: 0.1409 - val_acc: 0.9800 - lr: 1.0000e-04
+Epoch 7/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.2427 - acc: 0.9062
+Epoch 7: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 3ms/step - loss: 0.2189 - acc: 0.9400 - val_loss: 0.1300 - val_acc: 0.9600 - lr: 1.0000e-04
+Epoch 8/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.1689 - acc: 0.9688
+Epoch 8: val_acc did not improve from 0.98000
+
+Epoch 8: ReduceLROnPlateau reducing learning rate to 1.0000000474974514e-05.
+15/15 [==============================] - 0s 4ms/step - loss: 0.2030 - acc: 0.9422 - val_loss: 0.1243 - val_acc: 0.9600 - lr: 1.0000e-04
+Epoch 9/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.2039 - acc: 0.9375
+Epoch 9: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 4ms/step - loss: 0.2099 - acc: 0.9422 - val_loss: 0.1232 - val_acc: 0.9600 - lr: 1.0000e-05
+Epoch 10/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.1702 - acc: 0.9688
+Epoch 10: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 3ms/step - loss: 0.2124 - acc: 0.9378 - val_loss: 0.1233 - val_acc: 0.9600 - lr: 1.0000e-05
+Epoch 11/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.3453 - acc: 0.8750
+Epoch 11: val_acc did not improve from 0.98000
+
+Epoch 11: ReduceLROnPlateau reducing learning rate to 1.0000000656873453e-06.
+15/15 [==============================] - 0s 3ms/step - loss: 0.2175 - acc: 0.9356 - val_loss: 0.1230 - val_acc: 0.9600 - lr: 1.0000e-05
+Epoch 12/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.1162 - acc: 1.0000
+Epoch 12: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 4ms/step - loss: 0.2090 - acc: 0.9400 - val_loss: 0.1230 - val_acc: 0.9600 - lr: 1.0000e-06
+Epoch 13/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.2155 - acc: 0.9062
+Epoch 13: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 4ms/step - loss: 0.1976 - acc: 0.9400 - val_loss: 0.1230 - val_acc: 0.9600 - lr: 1.0000e-06
+Epoch 14/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.1222 - acc: 0.9688
+Epoch 14: val_acc did not improve from 0.98000
+
+Epoch 14: ReduceLROnPlateau reducing learning rate to 1.0000001111620805e-07.
+15/15 [==============================] - 0s 4ms/step - loss: 0.2049 - acc: 0.9422 - val_loss: 0.1230 - val_acc: 0.9600 - lr: 1.0000e-06
+Epoch 15/100
+ 1/15 [=>............................] - ETA: 0s - loss: 0.1685 - acc: 0.9688
+Epoch 15: val_acc did not improve from 0.98000
+15/15 [==============================] - 0s 3ms/step - loss: 0.1981 - acc: 0.9511 - val_loss: 0.1230 - val_acc: 0.9600 - lr: 1.0000e-07
+Epoch 15: early stopping
+7/7 [==============================] - 0s 815us/step
+Test f1 score : 0.9856421356421357 
+Test accuracy score : 0.9899497487437185 
+
+

@@ -1,0 +1,45 @@
+(/home/Student/s4726036/venv/tfenv) s4726036@login0:~/egg$ tail -f slurm-22348.out 
+=================================================================
+Total params: 254,706
+Trainable params: 254,706
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/100
+
+Epoch 1: val_acc improved from -inf to 0.49937, saving model to baseline_cnn_mitbih.h5
+56250/56250 - 475s - loss: 0.6932 - acc: 0.5009 - val_loss: 0.6932 - val_acc: 0.4994 - lr: 0.0010 - 475s/epoch - 8ms/step
+Epoch 2/100
+
+Epoch 2: val_acc did not improve from 0.49937
+56250/56250 - 455s - loss: 0.6932 - acc: 0.5002 - val_loss: 0.6932 - val_acc: 0.4994 - lr: 0.0010 - 455s/epoch - 8ms/step
+Epoch 3/100
+
+Epoch 3: val_acc improved from 0.49937 to 0.50063, saving model to baseline_cnn_mitbih.h5
+56250/56250 - 416s - loss: 0.6932 - acc: 0.5002 - val_loss: 0.6931 - val_acc: 0.5006 - lr: 0.0010 - 416s/epoch - 7ms/step
+Epoch 4/100
+
+Epoch 4: val_acc did not improve from 0.50063
+56250/56250 - 450s - loss: 0.6932 - acc: 0.4997 - val_loss: 0.6932 - val_acc: 0.4994 - lr: 0.0010 - 450s/epoch - 8ms/step
+Epoch 5/100
+
+Epoch 5: val_acc did not improve from 0.50063
+56250/56250 - 435s - loss: 0.6932 - acc: 0.4996 - val_loss: 0.6932 - val_acc: 0.5006 - lr: 0.0010 - 435s/epoch - 8ms/step
+Epoch 6/100
+
+Epoch 6: val_acc did not improve from 0.50063
+
+Epoch 6: ReduceLROnPlateau reducing learning rate to 0.00010000000474974513.
+56250/56250 - 404s - loss: 0.6932 - acc: 0.5005 - val_loss: 0.6932 - val_acc: 0.4994 - lr: 0.0010 - 404s/epoch - 7ms/step
+Epoch 7/100
+
+Epoch 7: val_acc did not improve from 0.50063
+56250/56250 - 409s - loss: 0.6930 - acc: 0.5003 - val_loss: 0.6931 - val_acc: 0.4994 - lr: 1.0000e-04 - 409s/epoch - 7ms/step
+Epoch 8/100
+
+Epoch 8: val_acc did not improve from 0.50063
+56250/56250 - 458s - loss: 0.6932 - acc: 0.5003 - val_loss: 0.6932 - val_acc: 0.5006 - lr: 1.0000e-04 - 458s/epoch - 8ms/step
+Epoch 8: early stopping
+12500/12500 [==============================] - 23s 2ms/step
+Test f1 score : 0.3339682835696636 
+Test accuracy score : 0.50143 
+
