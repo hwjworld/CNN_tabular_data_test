@@ -41,8 +41,8 @@ for idx, result in enumerate(dtd_result.values):
 dtd_result = dtd_result.loc[dtd_result['feature'].isin(top10features)]
 g = sns.relplot(y="time", x="feature", size="relevance", hue="value_level",
 # g = sns.relplot(="feature", size="relevance", hue="value_level",
-            sizes=(30, 400), alpha=.8, palette="muted",
-            height=5, data=dtd_result)
+            sizes=(30, 300), alpha=.8, palette="muted",
+            height=2, aspect=5, data=dtd_result)
 
 # g.xti
 # g.tick_params(axis='x')

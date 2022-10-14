@@ -29,7 +29,7 @@ from keras.layers.preprocessing import normalization, string_lookup, \
 
 print(tf.__version__)
 
-# tf.compat.v1.disable_eager_execution()
+tf.compat.v1.disable_eager_execution()
 
 feature_num = 41
 padding = 'same'  # valid or same

@@ -150,7 +150,7 @@ feature_layer = DenseFeatures(feature_columns)
 
 model = tf.keras.Sequential([
     feature_layer,
-    Dense(41, activation=activations.softmax),
+    Dense(41, activation='relu'),
     Dense(41, activation='relu'),
     Dropout(.1),
     Dense(1)
@@ -206,9 +206,8 @@ single_e = test_ds.get_single_element()[0]
 for ele in single_e:
     tf.identity(single_e[ele], name=ele)
     single_e[ele] = single_e[ele][...,np.newaxis]
-
-
 ###截止在这###
+
 
 print(single_e)
 analyzer.analyze(single_e)
