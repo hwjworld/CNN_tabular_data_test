@@ -239,7 +239,7 @@ analyze_results = analyzer.analyze(instances_test)
 relevance_sum = calc_mean_relevance(analyze_results)
 
 value_list = get_value_list(X_test)
-for instance_idx, instance in enumerate(instances_test):
+for instance_idx, instance in enumerate(instances_test[0]):
     one_patient = {'feature': [],
                    'time': [],
                    'relevance': [],
@@ -255,7 +255,7 @@ for instance_idx, instance in enumerate(instances_test):
         # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
         revelance = analyze_results[instance_idx][row_idx][0]
         csvdata['relevance'].append(revelance)
-        value = instance[row_idx][0][0]
+        value = instance[row_idx][0]
         level = calc_value_level(value_list,cols[row_idx],value)
         csvdata['value'].append(value)
         csvdata['value_level'].append(level)
