@@ -193,8 +193,6 @@ def calc_mean_relevance(analyze_results):
             total_r += analyze_results[i][row_idx][0]
         mean_r = total_r / len(analyze_results)
         relevances[cols[row_idx]] = {'t': total_r, 'm': mean_r}
-    # print('----calculated mean relevance----')
-    # print(relevances)
     return relevances
 
 
@@ -208,8 +206,6 @@ def get_value_list(instance):
         for day in instance:
             value_list.append(day[row_idx][0])
         value_list_dict[cols[row_idx]] = value_list
-    # print('----value_list-----')
-    # print(value_list_dict)
     return value_list_dict
 
 
@@ -228,7 +224,7 @@ def calc_value_level(value_range_list, feature, value):
         level = 'High'
     return level
 
-
+# s1 start --- for "one patient one timestamp"
 csvdata = {'feature': [],
            'time': [],
            'relevance': [],
@@ -237,49 +233,127 @@ csvdata = {'feature': [],
            'value': [],
            'value_level': [],
            'patient': []}
-instances_test = np.array_split(X_test, len(X_test) // 1)
 
+instances_test = np.array_split(X_test, 1)
+analyze_results = analyzer.analyze(instances_test)
+relevance_sum = calc_mean_relevance(analyze_results)
+
+value_list = get_value_list(X_test)
 for instance_idx, instance in enumerate(instances_test):
-    analyze_results = analyzer.analyze(instance)
-    mean_relevance = calc_mean_relevance(analyze_results)
     one_patient = {'feature': [],
                    'time': [],
                    'relevance': [],
-                   'total_relevance':[],
-                   'mean_relevance':[],
                    'value': [],
                    'value_level': []}
-    value_list = get_value_list(instance)
-    relevance_sum = calc_mean_relevance(analyze_results)
-    for result_idx, result in enumerate(analyze_results):
-        for row_idx in range(len(cols) - 1):
-            # Global csv
-            csvdata['feature'].append(cols[row_idx])
-            csvdata['time'].append(str(result_idx * 3))
-            # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
-            csvdata['relevance'].append(result[row_idx][0])
-            csvdata['total_relevance'].append(relevance_sum[cols[row_idx]]['t'])
-            csvdata['mean_relevance'].append(relevance_sum[cols[row_idx]]['m'])
-            value = instance[result_idx][row_idx][0]
-            level = calc_value_level(value_list,cols[row_idx],value)
-            csvdata['value'].append(value)
-            csvdata['value_level'].append(level)
-            csvdata['patient'].append('p' + str(instance_idx))
+    # for result_idx, result in enumerate(analyze_results):
+    for row_idx in range(len(cols) - 1):
+        # Global csv
+        csvdata['feature'].append(cols[row_idx])
+        csvdata['time'].append(0)
+        csvdata['total_relevance'].append(relevance_sum[cols[row_idx]]['t'])
+        csvdata['mean_relevance'].append(relevance_sum[cols[row_idx]]['m'])
+        # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
+        revelance = analyze_results[instance_idx][row_idx][0]
+        csvdata['relevance'].append(revelance)
+        value = instance[row_idx][0][0]
+        level = calc_value_level(value_list,cols[row_idx],value)
+        csvdata['value'].append(value)
+        csvdata['value_level'].append(level)
+        csvdata['patient'].append('p' + str(instance_idx))
 
-            # individual csv
-            one_patient['feature'].append(cols[row_idx])
-            one_patient['time'].append(str(result_idx * 3))
-            # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
-            one_patient['relevance'].append(result[row_idx][0])
-            one_patient['total_relevance'].append(relevance_sum[cols[row_idx]]['t'])
-            one_patient['mean_relevance'].append(relevance_sum[cols[row_idx]]['m'])
-            one_patient['value'].append(value)
-            one_patient['value_level'].append(level)
-            # one_patient['patient'].append('p'+str(instance_idx))
-        one_patient_df = pd.DataFrame(one_patient)
-        one_patient_df.to_csv(
-            'datasets/dtds/{}{}.csv'.format('p', str(instance_idx)),
-            index=False)
+        # individual csv
+        one_patient['feature'].append(cols[row_idx])
+        one_patient['time'].append(0)
+        # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
+        one_patient['relevance'].append(revelance)
+        one_patient['value'].append(value)
+        one_patient['value_level'].append(level)
+        # one_patient['patient'].append('p'+str(instance_idx))
+    one_patient_df = pd.DataFrame(one_patient)
+    one_patient_df.to_csv(
+        'datasets/dtds/{}{}.csv'.format('p', str(instance_idx)),
+        index=False)
+
+# s1 end
+
+
+# s7 start ---- below is the simulated 7 rows,(one patient, 7 timestamps)
+# deprecated
+
+# csvdata = {'feature': [],
+#            'time': [],
+#            'relevance': [],
+#            'total_relevance':[],
+#            'mean_relevance':[],
+#            'value': [],
+#            'value_level': [],
+#            'patient': []}
+#
+# def calc_mean_relevance(analyze_results):
+#     """
+#     计算mean relevalce
+#     """
+#     relevances = {}
+#     for row_idx in range(len(cols) - 1):
+#         total_r = 0
+#         for i in range(len(analyze_results)):
+#             total_r += analyze_results[i][row_idx][0]
+#         mean_r = total_r / len(analyze_results)
+#         relevances[cols[row_idx]] = {'t': total_r, 'm': mean_r}
+#     # print('----calculated mean relevance----')
+#     # print(relevances)
+#     return relevances
+#
+#
+#
+#
+#
+#
+# instances_test = np.array_split(X_test, len(X_test) // 1)
+#
+# for instance_idx, instance in enumerate(instances_test):
+#     analyze_results = analyzer.analyze(instance)
+#     mean_relevance = calc_mean_relevance(analyze_results)
+#     one_patient = {'feature': [],
+#                    'time': [],
+#                    'relevance': [],
+#                    'total_relevance':[],
+#                    'mean_relevance':[],
+#                    'value': [],
+#                    'value_level': []}
+#     value_list = get_value_list(instance)
+#     relevance_sum = calc_mean_relevance(analyze_results)
+#     for result_idx, result in enumerate(analyze_results):
+#         for row_idx in range(len(cols) - 1):
+#             # Global csv
+#             csvdata['feature'].append(cols[row_idx])
+#             csvdata['time'].append(str(result_idx * 3))
+#             # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
+#             csvdata['relevance'].append(result[row_idx][0])
+#             csvdata['total_relevance'].append(relevance_sum[cols[row_idx]]['t'])
+#             csvdata['mean_relevance'].append(relevance_sum[cols[row_idx]]['m'])
+#             value = instance[result_idx][row_idx][0]
+#             level = calc_value_level(value_list,cols[row_idx],value)
+#             csvdata['value'].append(value)
+#             csvdata['value_level'].append(level)
+#             csvdata['patient'].append('p' + str(instance_idx))
+#
+#             # individual csv
+#             one_patient['feature'].append(cols[row_idx])
+#             one_patient['time'].append(str(result_idx * 3))
+#             # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
+#             one_patient['relevance'].append(result[row_idx][0])
+#             one_patient['total_relevance'].append(relevance_sum[cols[row_idx]]['t'])
+#             one_patient['mean_relevance'].append(relevance_sum[cols[row_idx]]['m'])
+#             one_patient['value'].append(value)
+#             one_patient['value_level'].append(level)
+#             # one_patient['patient'].append('p'+str(instance_idx))
+#         one_patient_df = pd.DataFrame(one_patient)
+#         one_patient_df.to_csv(
+#             'datasets/dtds/{}{}.csv'.format('p', str(instance_idx)),
+#             index=False)
+
+## s7 end ----
 
 test_result_df = pd.DataFrame(csvdata)
 test_result_df.to_csv('datasets/dtd_result.csv', index=False)
