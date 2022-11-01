@@ -9,20 +9,19 @@ from keras import optimizers
 import warnings
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-
 warnings.filterwarnings('ignore')
 import innvestigate
-
 import tensorflow as tf
-
 tf.compat.v1.disable_eager_execution()
-
 from innvestigate.backend import graph
 
+########################## parameters ########################
 feature_number = 41
 epoch_number = 100
-# load dataset
 csv_file = "dataset/biodeg.csv"
+
+########################### data process #########################
+# load dataset
 dataframe = pd.read_csv(csv_file, header=None, sep=';')
 # print(dataframe.head())
 dataset = dataframe.values
@@ -56,6 +55,8 @@ X_train = np.array(train.values[:, 0:feature_number]).astype(float)  # [..., np.
 Y_test = encoder.transform(test.values[:, feature_number]).astype(np.int8)
 X_test = np.array(test.values[:, 0:feature_number]).astype(float)  # [..., np.newaxis]
 
+
+################################ dense model ##############################
 model = Sequential()
 model.add(Dense(feature_number, input_dim=X_train.shape[1], activation='relu'))
 model.add(Dropout(0.25))
@@ -71,19 +72,23 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 # fit model
 model.fit(X_train, Y_train, epochs=epoch_number, batch_size=64)
 
-# compute SHAP values
+
+######################### compute SHAP values ##########################
 explainer = shap.DeepExplainer(model, X_train)
 shap_values = explainer.shap_values(X_train)
 print("shap values")
 print(shap_values)
 shap.summary_plot(shap_values[0], plot_type='bar', feature_names=dataframe.columns)
 
+
+######################### compute innvestigate deep_taylor values ##########################
 model = graph.model_wo_softmax(model)
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
 instances_test = np.array_split(X_test, 1)
 analyze_results = analyzer.analyze(instances_test)
 
 
+######################### generate dtd result csv ##########################
 def calc_mean_relevance(analyze_results):
     """
     计算mean relevalce
