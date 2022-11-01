@@ -4,7 +4,7 @@ import innvestigate
 import keras.activations
 import pandas as pd
 import numpy as np
-
+import shap
 from keras import optimizers, losses, activations, models
 from keras.callbacks import ModelCheckpoint, EarlyStopping, \
     LearningRateScheduler, ReduceLROnPlateau
@@ -21,6 +21,7 @@ import keras.applications.vgg16 as vgg16
 import tensorflow as tf
 
 tf.compat.v1.disable_eager_execution()
+tf.keras.backend.set_learning_phase(True)
 
 feature_num = 41
 padding = 'same'  # valid or same
@@ -98,8 +99,7 @@ X_train = np.array(train.values[:, 0:41]).astype(float)[..., np.newaxis]
 Y_test = encoder.transform(test.values[:, 41]).astype(np.int8)
 X_test = np.array(test.values[:, 0:41]).astype(float)[..., np.newaxis]
 
-
-# instance_to_test = X_test[3:8]
+instance_to_test = X_test[3:8]
 
 
 def get_model():
@@ -169,14 +169,25 @@ callbacks_list = [checkpoint, early, redonplat]  # early
 
 model.fit(X_train, Y_train, epochs=100, verbose=2, callbacks=callbacks_list,
           validation_split=0.1)
+
+score = model.evaluate(X_test, Y_test, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
+
 model.load_weights(file_path)
 
 # model = graph.model_wo_softmax(model)
 # print(model.predict(instance_to_test))
+
 model = graph.model_wo_softmax(model)
+
+# shapexlainer = shap.DeepExplainer(model,X_train)
+# shap_values = shapexlainer.shap_values(X_train)
+# print("Shap_values", shap_values)
 #
 # Create analyzer
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
+
 
 # analyze the specified instance
 # a = analyzer.analyze(instance_to_test)
@@ -214,23 +225,30 @@ def calc_value_level(value_range_list, feature, value):
     计算每个value的区间
     """
     max_value = max(value_range_list[feature])
-    range1 = max_value * 0.05
-    range2 = max_value * 0.95
-    if value <= range1:
-        level = 'Low'
-    elif range1 < value <= range2:
-        level = 'Medium'
-    else:
-        level = 'High'
-    return level
+    min_value = min(value_range_list[feature])
+    # ((input - min) * 100) / (max - min)
+    pctg = (value - min_value) / (max_value - min_value)
+    return 'Low' if pctg < 0.2 else 'Medium' if pctg < 0.8 else 'High'
+    # range1 = max_value * 0.05
+    # range2 = max_value * 0.95
+    # if value <= range1:
+    #     level = 'Low'
+    # elif range1 < value <= range2:
+    #     level = 'Medium'
+    # else:
+    #     level = 'High'
+    # return level
+
 
 # s1 start --- for "one patient one timestamp"
 csvdata = {'feature': [],
            'time': [],
            'relevance': [],
-           'total_relevance':[],
-           'mean_relevance':[],
+           'total_relevance': [],
+           'mean_relevance': [],
            'value': [],
+           'max_value': [],
+           'min_value': [],
            'value_level': [],
            'patient': []}
 
@@ -244,6 +262,8 @@ for instance_idx, instance in enumerate(instances_test[0]):
                    'time': [],
                    'relevance': [],
                    'value': [],
+                   'max_value': [],
+                   'min_value': [],
                    'value_level': []}
     # for result_idx, result in enumerate(analyze_results):
     for row_idx in range(len(cols) - 1):
@@ -256,8 +276,10 @@ for instance_idx, instance in enumerate(instances_test[0]):
         revelance = analyze_results[instance_idx][row_idx][0]
         csvdata['relevance'].append(revelance)
         value = instance[row_idx][0]
-        level = calc_value_level(value_list,cols[row_idx],value)
+        level = calc_value_level(value_list, cols[row_idx], value)
         csvdata['value'].append(value)
+        csvdata['max_value'].append(max(value_list[cols[row_idx]]))
+        csvdata['min_value'].append(min(value_list[cols[row_idx]]))
         csvdata['value_level'].append(level)
         csvdata['patient'].append('p' + str(instance_idx))
 
@@ -267,6 +289,8 @@ for instance_idx, instance in enumerate(instances_test[0]):
         # print('{},{},{}'.format(instance_idx, result_idx, row_idx))
         one_patient['relevance'].append(revelance)
         one_patient['value'].append(value)
+        one_patient['max_value'].append(max(value_list[cols[row_idx]]))
+        one_patient['min_value'].append(min(value_list[cols[row_idx]]))
         one_patient['value_level'].append(level)
         # one_patient['patient'].append('p'+str(instance_idx))
     one_patient_df = pd.DataFrame(one_patient)
