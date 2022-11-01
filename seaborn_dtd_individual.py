@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-dtd_result = pd.read_csv('datasets/dtds/p12.csv')
+dtd_result = pd.read_csv('datasets/dtds/p10.csv')
 
 # s7 start ---- below is the simulated 7 rows,(one patient, 7 timestamps)
 # dtd_result = dtd_result.sort_values(by='mean_relevance', ascending=False)
