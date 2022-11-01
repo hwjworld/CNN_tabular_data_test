@@ -20,7 +20,7 @@ tf.compat.v1.disable_eager_execution()
 from innvestigate.backend import graph
 
 feature_number = 41
-epoch_number = 20
+epoch_number = 100
 # load dataset
 csv_file = "dataset/biodeg.csv"
 dataframe = pd.read_csv(csv_file, header=None, sep=';')
@@ -74,6 +74,7 @@ model.fit(X_train, Y_train, epochs=epoch_number, batch_size=64)
 # compute SHAP values
 explainer = shap.DeepExplainer(model, X_train)
 shap_values = explainer.shap_values(X_train)
+print("shap values")
 print(shap_values)
 shap.summary_plot(shap_values[0], plot_type='bar', feature_names=dataframe.columns)
 
