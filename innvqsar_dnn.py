@@ -3,17 +3,19 @@ import shap
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras import optimizers
 import warnings
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-warnings.filterwarnings('ignore')
 import innvestigate
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from innvestigate.backend import graph
+
+warnings.filterwarnings('ignore')
+tf.compat.v1.disable_eager_execution()
 
 ########################## parameters ########################
 feature_number = 41
@@ -55,8 +57,14 @@ X_train = np.array(train.values[:, 0:feature_number]).astype(float)  # [..., np.
 Y_test = encoder.transform(test.values[:, feature_number]).astype(np.int8)
 X_test = np.array(test.values[:, 0:feature_number]).astype(float)  # [..., np.newaxis]
 
-
 ################################ dense model ##############################
+model_file_path = "qsar_model3.h5"
+checkpoint = ModelCheckpoint(model_file_path, monitor='val_acc', verbose=2)
+early = EarlyStopping(monitor="val_acc", mode="max", patience=5, verbose=1)
+redonplat = ReduceLROnPlateau(monitor="val_acc", mode="max", patience=3, verbose=2)
+# callbacks_list = [checkpoint, redonplat]  # early
+callbacks_list = [checkpoint, early, redonplat]  # early
+
 model = Sequential()
 model.add(Dense(feature_number, input_dim=X_train.shape[1], activation='relu'))
 model.add(Dropout(0.25))
@@ -70,8 +78,12 @@ model.add(Dense(2, activation='softmax'))
 # compile model
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 # fit model
-model.fit(X_train, Y_train, epochs=epoch_number, batch_size=64)
+model.fit(X_train, Y_train, epochs=epoch_number, batch_size=64, callbacks=callbacks_list, validation_split=0.1)
 
+###################### # Loads and Evaluate the weights #####################
+model.load_weights(model_file_path)
+loss, acc = model.evaluate(X_test, Y_test, verbose=2)
+print("model, accuracy: {:5.2f}%".format(100 * acc))
 
 ######################### compute SHAP values ##########################
 explainer = shap.DeepExplainer(model, X_train)
@@ -79,7 +91,6 @@ shap_values = explainer.shap_values(X_train)
 print("shap values")
 print(shap_values)
 shap.summary_plot(shap_values[0], plot_type='bar', feature_names=dataframe.columns)
-
 
 ######################### compute innvestigate deep_taylor values ##########################
 model = graph.model_wo_softmax(model)
