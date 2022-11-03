@@ -1,27 +1,20 @@
 # 这篇使用原始的的train，在程序里分train,test,并且加上了column名
 import innvestigate
-
-import keras.activations
-import pandas as pd
 import numpy as np
+import pandas as pd
 import shap
+import tensorflow as tf
 from keras import optimizers, losses, activations, models
 from keras.callbacks import ModelCheckpoint, EarlyStopping, \
-    LearningRateScheduler, ReduceLROnPlateau
+    ReduceLROnPlateau
 from keras.layers import Dense, Input, Dropout, Convolution1D, MaxPool1D, \
-    GlobalMaxPool1D, GlobalAveragePooling1D, \
-    concatenate
+    GlobalMaxPool1D, GlobalAveragePooling1D
 from sklearn.model_selection import train_test_split
-
 from sklearn.preprocessing import LabelEncoder
 
-import matplotlib.pyplot as plt
-
-import keras.applications.vgg16 as vgg16
-import tensorflow as tf
+# tf.keras.backend.set_learning_phase(True)
 
 tf.compat.v1.disable_eager_execution()
-tf.keras.backend.set_learning_phase(True)
 
 feature_num = 41
 padding = 'same'  # valid or same
@@ -39,49 +32,10 @@ encoder = LabelEncoder()
 encoder.fit(Y)
 encoded_Y = encoder.transform(Y)
 
-cols = ["SpMax_L",
-        "J_Dz(e)",
-        "nHM",
-        "F01[N-N]",
-        "F04[C-N]",
-        "NssssC",
-        "nCb-",
-        "C%",
-        "nCp",
-        "nO",
-        "F03[C-N]",
-        "SdssC",
-        "HyWi_B(m)",
-        "LOC",
-        "SM6_L",
-        "F03[C-O]",
-        "Me",
-        "Mi",
-        "nN-N",
-        "nArNO2",
-        "nCRX3",
-        "SpPosA_B(p)",
-        "nCIR",
-        "B01[C-Br]",
-        "B03[C-Cl]",
-        "N-073",
-        "SpMax_A",
-        "Psi_i_1d",
-        "B04[C-Br]",
-        "SdO",
-        "TI2_L",
-        "nCrt",
-        "C-026",
-        "F02[C-N]",
-        "nHDon",
-        "SpMax_B(m)",
-        "Psi_i_A",
-        "nN",
-        "SM6_B(m)",
-        "nArCOOR",
-        "nX",
-        "experimental"]
-
+cols = ["SpMax_L", "J_Dz(e)", "nHM", "F01[N-N]", "F04[C-N]", "NssssC", "nCb-", "C%", "nCp", "nO", "F03[C-N]", "SdssC",
+        "HyWi_B(m)", "LOC", "SM6_L", "F03[C-O]", "Me", "Mi", "nN-N", "nArNO2", "nCRX3", "SpPosA_B(p)", "nCIR",
+        "B01[C-Br]", "B03[C-Cl]", "N-073", "SpMax_A", "Psi_i_1d", "B04[C-Br]", "SdO", "TI2_L", "nCrt", "C-026",
+        "F02[C-N]", "nHDon", "SpMax_B(m)", "Psi_i_A", "nN", "SM6_B(m)", "nArCOOR", "nX", "experimental"]
 dataframe.columns = cols
 
 print(dataframe.head())
@@ -127,8 +81,14 @@ def get_model():
                           padding=padding)(img_1)
     img_1 = Convolution1D(256, kernel_size=3, activation=activations.relu,
                           padding=padding)(img_1)
-    img_1 = GlobalMaxPool1D()(img_1)
-    img_1 = Dropout(rate=0.2)(img_1)
+    ## https://github.com/slundberg/shap/issues/559 replacing GlobalMaxPool1D
+    # img_1 = MaxPool1D(pool_size=5, strides=1)(img_1)
+    # img_1 = tf.keras.layers.Lambda(lambda s: tf.keras.backend.squeeze(s, axis=1))(img_1)
+
+    img_1 = GlobalAveragePooling1D()(img_1)
+    # img_1 = GlobalMaxPool1D()(img_1)
+    # img_1 = GlobalMaxPool1D(keepdims=True,data_format='channels_last')(img_1)
+    img_1 = Dropout(rate=0.1)(img_1)
 
     dense_1 = Dense(feature_num, activation=activations.relu, name="dense_1")(
         img_1)
@@ -142,7 +102,7 @@ def get_model():
 
     model.compile(optimizer=opt, loss=losses.sparse_categorical_crossentropy,
                   metrics=['acc'])
-    model.summary()
+    # model.summary()
     return model
 
 
@@ -179,12 +139,20 @@ model.load_weights(file_path)
 # model = graph.model_wo_softmax(model)
 # print(model.predict(instance_to_test))
 
+
+# select a set of background examples to take an expectation over
+# background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
+
 model = graph.model_wo_softmax(model)
 
-# shapexlainer = shap.DeepExplainer(model,X_train)
-# shap_values = shapexlainer.shap_values(X_train)
-# print("Shap_values", shap_values)
+shapexlainer = shap.DeepExplainer(model, X_test)
+shap_values = shapexlainer.shap_values(X_test)
+print("Shap_values", shap_values)
+# shap.summary_plot(shap_values[0], plot_type='bar', feature_names=dataframe.columns)
+# shap.image_plot(shap_values, -X_train)
 #
+
+
 # Create analyzer
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
 
